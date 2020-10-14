@@ -3,6 +3,7 @@ name := "io-comparative"
 version := "0.1"
 
 scalaVersion := "2.13.3"
+scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % "2.13.3",
