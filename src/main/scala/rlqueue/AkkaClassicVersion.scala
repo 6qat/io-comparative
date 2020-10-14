@@ -62,7 +62,10 @@ object AkkaClassicVersion {
     )(implicit ec: ExecutionContext): Future[T] = {
       val p = Promise[T]()
       val msg =
-        LazyFuture(() => f.andThen { case r => p.complete(r) }.map(_ => ()))
+        LazyFuture(() =>
+          f.andThen { case r => p.complete(r) }
+            .map(_ => ())
+        )
       rateLimiterActor ! msg
       p.future
     }
@@ -82,10 +85,12 @@ object AkkaClassicVersion {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val actorSystem: ActorSystem = ActorSystem("system")
-    val arl = AkkaRateLimiter.create(10, 1.second)
+    val arl = AkkaRateLimiter.create(3, 1.microseconds)
     arl.runLimited(Future { 1 })
     arl.runLimited(Future { 2 })
     arl.runLimited(Future { 3 })
+    arl.runLimited(Future { 4 })
+    arl.runLimited(Future { 5 })
   }
 
 }
