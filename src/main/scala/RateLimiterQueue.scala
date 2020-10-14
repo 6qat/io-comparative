@@ -1,8 +1,8 @@
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 
 import scala.collection.immutable.Queue
-import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future, Promise}
 
 sealed trait RateLimiterTask[F]
 case class Run[F](run: F) extends RateLimiterTask[F]
@@ -127,5 +127,36 @@ private class RateLimiterActor(maxRuns: Int, per: FiniteDuration)
         )
     }
   }
+}
 
+class AkkaRateLimiter(rateLimiterActor: ActorRef) {
+  def runLimited[T](
+      f: => Future[T]
+  )(implicit ec: ExecutionContext): Future[T] = {
+    val p = Promise[T]
+    val msg =
+      LazyFuture(() => f.andThen { case r => p.complete(r) }.map(_ => ()))
+    rateLimiterActor ! msg
+    p.future
+  }
+}
+
+object AkkaRateLimiter {
+  def create(maxRuns: Int, per: FiniteDuration)(implicit
+      actorSystem: ActorSystem
+  ): AkkaRateLimiter = {
+
+    val rateLimiterActor =
+      actorSystem.actorOf(Props(new RateLimiterActor(maxRuns, per)))
+    new AkkaRateLimiter(rateLimiterActor)
+  }
+}
+
+object Main extends App {
+  import scala.concurrent.ExecutionContext.Implicits.global
+  implicit val actorSystem: ActorSystem = ActorSystem("system")
+  val arl = AkkaRateLimiter.create(10, 1.second)
+  arl.runLimited(Future { 1 })
+  arl.runLimited(Future { 2 })
+  arl.runLimited(Future { 3 })
 }
