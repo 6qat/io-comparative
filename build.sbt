@@ -13,5 +13,7 @@ libraryDependencies ++= Seq(
   "dev.zio" %% "zio" % "1.0.3",
   "dev.zio" %% "zio-streams" % "1.0.3",
   "com.typesafe.akka" %% "akka-actor-typed" % "2.6.10",
-  "com.typesafe.akka" %% "akka-stream" % "2.6.10"
+  "com.typesafe.akka" %% "akka-stream" % "2.6.10",
+  "co.fs2" %% "fs2-core" % "2.4.4",
+  "co.fs2" %% "fs2-io" % "2.4.4"
 ).map(l => l.withSources())
