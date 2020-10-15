@@ -26,5 +26,6 @@ object MonixLab {
       .delayExecution(2.seconds)
       // executes the finalizer on cancelation
       .doOnCancel(UIO(println("taskA has been cancelled")))
+
   }
 }

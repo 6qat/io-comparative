@@ -85,12 +85,11 @@ object AkkaClassicVersion {
   def main(args: Array[String]): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val actorSystem: ActorSystem = ActorSystem("system")
-    val arl = AkkaRateLimiter.create(3, 1.microseconds)
-    arl.runLimited(Future { 1 })
-    arl.runLimited(Future { 2 })
-    arl.runLimited(Future { 3 })
-    arl.runLimited(Future { 4 })
-    arl.runLimited(Future { 5 })
+    val arl = AkkaRateLimiter.create(1, 1.microseconds)
+    arl.runLimited(Future { Thread.sleep(1000); println("Teste 1"); 1 })
+    arl.runLimited(Future { Thread.sleep(2000); println("Teste 2"); 2 })
+    arl.runLimited(Future { Thread.sleep(3000); println("Teste 3"); 3 })
+    arl.runLimited(Future { Thread.sleep(4000); println("Teste 4"); 4 })
   }
 
 }
