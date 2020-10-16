@@ -20,10 +20,10 @@ object fs2_lab extends App {
           .scanChunksOpt(initialState) { currentState: Long =>
             if (currentState <= 0) None
             else
-              Some((c: Chunk[O]) => {
-                val tup: (Long, Chunk[O]) = c.size match {
-                  case m if m < currentState => (currentState - m, c)
-                  case m                     => (0, c.take(currentState.toInt))
+              Some((chunk: Chunk[O]) => {
+                val tup: (Long, Chunk[O]) = chunk.size match {
+                  case m if m < currentState => (currentState - m, chunk)
+                  case m                     => (0, chunk.take(currentState.toInt))
                 }
                 tup
               })
@@ -47,8 +47,12 @@ object fs2_lab extends App {
     in => go(in, n).stream
   }
 
-  val o4: List[Int] = Stream(1, 2, 3, 4, 5, 6, 7, 8).through(tk(3)).toList
+  def pipe[F[_], O]: Pipe[F, O, O] = tk(3)
+
+  val o4: List[Int] = Stream(1, 2, 3, 4, 5, 6, 7, 8).through(pipe).toList
   println(o4)
   println(Stream(1, 2, 3, 4, 5, 6, 7, 8).through(tk2(3)).toList)
+
+  val s = Stream(1, 2, 3, 4, 5, 6, 7, 8).through(pipe)
 
 }
