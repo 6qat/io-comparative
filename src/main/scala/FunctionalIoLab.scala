@@ -66,6 +66,8 @@ object FunctionalIoLab {
     } yield name
 
   def main(args: Array[String]): Unit = {
+    val i = 10.0
+    val s = "Guilherme"
     interpret(example2)
   }
 

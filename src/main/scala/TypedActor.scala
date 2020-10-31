@@ -57,6 +57,8 @@ object HelloWorldMain {
     val system: ActorSystem[HelloWorldMain.SayHello] =
       ActorSystem(HelloWorldMain(), "hello")
 
+      val i = 10.0
+      
     system ! HelloWorldMain.SayHello("World")
     system ! HelloWorldMain.SayHello("Akka")
 
